@@ -12,23 +12,26 @@ export default class Controller3D {
     private buttonMeshes: { [key: number]: THREE.Mesh | undefined } = {}; // To store references to button meshes
     private originalEmissiveColors: { [key: number]: THREE.Color | undefined } = {}; // To store original colors
 
-    // Mapping of Gamepad API button indices to model mesh names
+    // Mapping of Gamepad API button indices to model mesh names (based on GLTF node names)
     private buttonMap: { [key: number]: string } = {
-        0: 'button_cross',     // Cross
-        1: 'button_circle',    // Circle
-        2: 'button_triangle',  // Triangle
-        3: 'button_square',    // Square
-        4: 'button_l1',        // L1
-        5: 'button_r1',        // R1
-        6: 'button_l2',        // L2 (often an axis, but handled as button value)
-        7: 'button_r2',        // R2 (often an axis, but handled as button value)
-        8: 'button_share',     // Share
-        9: 'button_options',   // Options
-        10: 'button_l3',       // L3 (Left Stick Press)
-        11: 'button_r3',       // R3 (Right Stick Press)
-        12: 'button_ps',        // PS Button (may or may not exist/be named)
-        13: 'button_touchpad' // Touchpad Button (may or may not exist/be named)
-        // Add other buttons if needed, e.g., D-pad
+        0: 'Object_12',     // Assuming this corresponds to Croix (based on previous test)
+        1: 'Object_36',    // Assuming this corresponds to Cercle
+        2: 'Object_8',  // Assuming this corresponds to Triangle
+        3: 'Object_10',    // Assuming this corresponds to Carré
+        4: 'Object_13',        // Assuming this corresponds to L1
+        5: 'Object_14',        // Assuming this corresponds to R1
+        6: 'Object_17',        // Assuming this corresponds to L2
+        7: 'Object_2',        // Assuming this corresponds to R2
+        8: 'Object_20',
+        16: 'Object_16',  // Assuming this corresponds to Share (or another button)
+        17: 'Object_6',  // Assuming this corresponds to L2
+        18: 'Object_18',  // Assuming this corresponds to R2
+        19: 'Object_19',  // Assuming this corresponds to L3
+        20: 'Object_20',  // Assuming this corresponds to R3
+        21: 'Object_21',  // Assuming this corresponds to PS
+        22: 'Object_22',  // Assuming this corresponds to Touchpad
+        23: 'Object_23',  // Assuming this corresponds to Options
+        // Indices 9 to 13 (Options, L3, R3, PS, Touchpad) are not mapped yet
     };
 
     constructor(container: HTMLElement) {
@@ -71,7 +74,7 @@ export default class Controller3D {
             // cameraPosition.x += distance * 0.5;
             // cameraPosition.y += distance * 0.3;
             this.camera.position.copy(cameraPosition);
-
+            console.table(this.buttonMeshes);
             // Look for button meshes and store them
             for (const buttonIndex in this.buttonMap) {
                 const meshName = this.buttonMap[buttonIndex];
@@ -103,31 +106,53 @@ export default class Controller3D {
 
     private animate() {
         requestAnimationFrame(() => this.animate());
-        
-        this.controls.update();
 
+        // Lecture des boutons manette
+        const gamepads = navigator.getGamepads?.();
+        if (gamepads?.[0]) {
+            const gamepad = gamepads[0];
+            const buttonValues = gamepad.buttons.map(b => b.value);
+            this.updateButtonStates(buttonValues);
+        }
+
+        this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }
 
     // New method to update button states
     public updateButtonStates(buttonValues: number[]) {
+        // console.log('Button values:', buttonValues.map((val, i) => `${i}: ${val.toFixed(2)}`).join(', '));
+
         for (let i = 0; i < buttonValues.length; i++) {
-            const buttonIsPressed = buttonValues[i] > 0; // Use > 0 to handle analog buttons/triggers
+            // Use a very low threshold for digital buttons and a slightly higher one for analog triggers
+            const isAnalogTrigger = i === 6 || i === 7;
+            const pressThreshold = isAnalogTrigger ? 0.1 : 0.01; // Threshold: 0.01 for digital, 0.1 for analog
+            
+            const buttonIsPressed = buttonValues[i] > pressThreshold;
+
+            // Debug log
+            if (buttonIsPressed) {
+                console.log(`Button ${i} is pressed`);
+            }
+
             const buttonMesh = this.buttonMeshes[i];
             const originalColor = this.originalEmissiveColors[i];
 
-            if (buttonMesh && buttonMesh.material) {
+            if (buttonMesh && buttonMesh.material && originalColor !== undefined) {
                  // Handle multi-material case
                 if (Array.isArray(buttonMesh.material)) {
                     buttonMesh.material.forEach(mat => {
                          // Check if material has emissive property and it's a Color
-                         if ('emissive' in mat && mat.emissive instanceof THREE.Color && originalColor) {
-                            mat.emissive.set(buttonIsPressed ? 0x00ff00 : originalColor); // Green when pressed
+                         if ('emissive' in mat && mat.emissive instanceof THREE.Color) {
+                             mat.emissive.set(buttonIsPressed ? 0x00ff00 : originalColor); // Green when pressed
                          }
                     });
-                } else if ('emissive' in buttonMesh.material && buttonMesh.material.emissive instanceof THREE.Color && originalColor) {
+                } else if ('emissive' in buttonMesh.material && buttonMesh.material.emissive instanceof THREE.Color) {
                      buttonMesh.material.emissive.set(buttonIsPressed ? 0x00ff00 : originalColor); // Green when pressed
                 }
+            } else if (buttonIsPressed) {
+                 // Log if a button is pressed but mesh/material is not found/valid
+                 // console.log(`Button ${i} pressed, but mesh or material/originalColor is missing/invalid.`);
             }
         }
     }

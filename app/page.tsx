@@ -35,21 +35,7 @@ export default function Page() {
             window.addEventListener('gamepaddisconnected', updateStatus);
         };
 
-        const startGamepadUpdateLoop = () => {
-            const update = () => {
-                const gamepad = gamepadAPI.getGamepad();
-                if (gamepad && controller3DRef.current) {
-                    // Pass button states to Controller3D
-                    const buttonStates = gamepad.buttons.map(button => button.value);
-                    controller3DRef.current.updateButtonStates(buttonStates); // Call new method in Controller3D
-                }
-                requestAnimationFrame(update);
-            };
-            update();
-        };
-
         setupEventListeners();
-        startGamepadUpdateLoop(); // Start the gamepad update loop
 
         return () => {
             window.removeEventListener('gamepadconnected', updateStatus);
