@@ -1,0 +1,56 @@
+/* Styles for the PS4 DualShock Controller Interface */
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* background-color: #f0f0f0; */ /* Commented out to avoid conflict with Three.js background */
+}
+
+.controller-container {
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.controller-3d {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.button {
+    background-color: #3498db;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.button:hover {
+    background-color: #2980b9;
+}
+
+.button:active {
+    transform: scale(0.95);
+}
+
+.status-display {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: #333;
+    text-align: center;
+}

@@ -1,0 +1,11 @@
+Model Information:
+* title:	PS4 Controller
+* source:	https://sketchfab.com/3d-models/ps4-controller-c10e207b60ec451fabde91c17d4cb2ac
+* author:	albertduranll (https://sketchfab.com/albertduranll)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "PS4 Controller" (https://sketchfab.com/3d-models/ps4-controller-c10e207b60ec451fabde91c17d4cb2ac) by albertduranll (https://sketchfab.com/albertduranll) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
